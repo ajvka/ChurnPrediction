@@ -18,7 +18,6 @@ path_train = r'./dataset/churn_train.txt'
 
 # read raw csv data into pandas dataframe
 raw_train = pp.readData(path_train)
-
 formatData(raw_train)
 
 # calculate correlations
@@ -45,6 +44,7 @@ etc_model.fit(data_train[X], data_train[Y].values.ravel())
 print("\n\nFEATURE IMPORTANCE: \n")
 print(etc_model.feature_importances_)
 
+
 # get features based on RFE results
 def getRFEFeatures():
     features = []
@@ -53,6 +53,7 @@ def getRFEFeatures():
             features.append(X[index])
     return features
 
+
 # get features based on ETC results
 def getETCFeatures(threshold):
     features = []
@@ -60,3 +61,9 @@ def getETCFeatures(threshold):
         if i >= threshold:
             features.append(X[index])
     return features
+
+
+# read test data
+path_test = r'./dataset/churn_test.txt'
+data_test = pp.readData(path_test)
+formatData(data_test)

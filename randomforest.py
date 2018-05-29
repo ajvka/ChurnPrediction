@@ -1,6 +1,6 @@
 import dataPreprocessing as dpp
 import statsmodels.api as sma
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn import model_selection
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
@@ -9,16 +9,17 @@ from sklearn.metrics import roc_curve
 import matplotlib.pyplot as plt
 
 
-def createLogRegModel(X, Y):
+def createRandomForestModel(X, Y):
+    # rfc = RandomForestClassifier()
     # train logreg model
-    logreg = LogisticRegression()
+    logreg = RandomForestClassifier(max_depth=8)
     logreg.fit(data_train[X], data_train[Y].values.ravel())
     predictedY = logreg.predict(data_test[X])
-    print('\nLogistic Regression Classifier Test Accuracy: {:.3f}\n'.format(logreg.score(data_test[X], data_test[Y])))
+    print('\nRandom Forest Classifier Test Accuracy: {:.3f}\n'.format(logreg.score(data_test[X], data_test[Y])))
 
     # k-fold cross validation
     kfold = model_selection.KFold(n_splits=10, random_state=7)
-    modelCV = LogisticRegression()
+    modelCV = RandomForestClassifier()
     scoring = 'accuracy'
     results = model_selection.cross_val_score(modelCV, data_train[X], data_train[Y].values.ravel(), cv=kfold,
                                               scoring=scoring)
@@ -33,7 +34,7 @@ def createLogRegModel(X, Y):
     logit_roc_auc = roc_auc_score(data_test[Y], logreg.predict(data_test[X]))
     fpr, tpr, thresholds = roc_curve(data_test[Y], logreg.predict_proba(data_test[X])[:, 1])
     plt.figure()
-    plt.plot(fpr, tpr, label='Logistic Regression (area = %0.2f)' % logit_roc_auc)
+    plt.plot(fpr, tpr, label='Random Forest Classifier (area = %0.2f)' % logit_roc_auc)
     plt.plot([0, 1], [0, 1], 'r--')
     plt.xlim([0.0, 1.1])
     plt.ylim([0.0, 1.1])
@@ -41,7 +42,7 @@ def createLogRegModel(X, Y):
     plt.ylabel('TPR')
     plt.title('ROC Curve')
     plt.legend(loc="upper right")
-    plt.savefig('LogReg_ROC')
+    plt.savefig('RandomForest_ROC')
     plt.show()
 
 
@@ -51,17 +52,5 @@ data_test = dpp.data_test
 # get features from RFE results
 X = dpp.getRFEFeatures()
 Y = ['churn']
-logit = sma.Logit(data_train[Y].values.ravel(), data_train[X])
-res = logit.fit()
-print(res.summary())
 
-createLogRegModel(X, Y)
-
-# get features from ETC results
-X = dpp.getETCFeatures(0.07)
-Y = ['churn']
-logit = sma.Logit(data_train[Y].values.ravel(), data_train[X])
-res = logit.fit()
-print(res.summary())
-
-createLogRegModel(X, Y)
+createRandomForestModel(X, Y)
