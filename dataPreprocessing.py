@@ -53,3 +53,10 @@ def getRFEFeatures():
             features.append(X[index])
     return features
 
+# get features based on ETC results
+def getETCFeatures(threshold):
+    features = []
+    for index, i in enumerate(etc_model.feature_importances_):
+        if i >= threshold:
+            features.append(X[index])
+    return features
